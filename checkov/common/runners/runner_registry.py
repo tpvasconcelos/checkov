@@ -48,6 +48,7 @@ from checkov.common.util.data_structures_utils import pickle_deepcopy
 from checkov.common.util.json_utils import CustomJSONEncoder
 from checkov.common.util.secrets_omitter import SecretsOmitter
 from checkov.common.util.type_forcers import convert_csv_string_arg_to_list, force_list
+from checkov.lazy_runner_registry import LazyRunner
 from checkov.logging_init import log_stream, erase_log_stream
 from checkov.sca_image.runner import Runner as image_runner
 from checkov.common.secrets.consts import SECRET_VALIDATION_STATUSES
@@ -78,24 +79,50 @@ SUMMARY_POSITIONS = frozenset(['top', 'bottom'])
 OUTPUT_DELIMITER = "\n--- OUTPUT DELIMITER ---\n"
 
 
+EagerOrLazyRunner = _BaseRunner | LazyRunner
+
+
+def filter_runner_framework(runners: list[EagerOrLazyRunner], runner_filter: RunnerFilter) -> list[EagerOrLazyRunner]:
+    if not runner_filter:
+        return runners
+    if not runner_filter.framework:
+        return runners
+    if "all" in runner_filter.framework:
+        return runners
+    return [runner for runner in runners if runner.check_type in runner_filter.framework]
+
+
+def load_all(runners: list[EagerOrLazyRunner]) -> list[_BaseRunner]:
+    return [
+        runner.load_runner() if isinstance(runner, LazyRunner) else runner for runner in runners
+    ]
+
+
+def _get_image_referencing_runners(runners: list[_BaseRunner]) -> set[ImageReferencer]:
+    image_referencing_runners: set[ImageReferencer] = set()
+    for runner in runners:
+        if issubclass(runner.__class__, ImageReferencer):
+            image_referencing_runners.add(cast(ImageReferencer, runner))
+
+    return image_referencing_runners
+
+
 class RunnerRegistry:
     def __init__(
         self,
         banner: str,
         runner_filter: RunnerFilter,
-        *runners: _BaseRunner,
+        *runners: EagerOrLazyRunner,
         tool: str = tool_name,
         secrets_omitter_class: Type[SecretsOmitter] = SecretsOmitter,
     ) -> None:
         self.logger = logging.getLogger(__name__)
         add_resource_code_filter_to_logger(self.logger)
         self.runner_filter = runner_filter
-        self.runners = list(runners)
+        self.runners = load_all(filter_runner_framework(list(runners), self.runner_filter))
         self.banner = banner
         self.sca_supported_ir_report: Optional[Report] = None
         self.scan_reports: list[Report] = []
-        self.image_referencing_runners = self._get_image_referencing_runners()
-        self.filter_runner_framework()
         self.tool = tool
         self._check_type_to_report_map: dict[str, Report] = {}  # used for finding reports with the same check type
         self.licensing_integration = licensing_integration  # can be maniuplated by unit tests
@@ -104,7 +131,7 @@ class RunnerRegistry:
         self.check_type_to_resource_subgraph_map: dict[str, dict[str, str]] = {}
         for runner in runners:
             if isinstance(runner, image_runner):
-                runner.image_referencers = self.image_referencing_runners
+                runner.image_referencers = _get_image_referencing_runners(self.runners)
 
     def run(
             self,
@@ -701,13 +728,7 @@ class RunnerRegistry:
         return {key: os.path.join(output_path, value) for key, value in output_files.items()}
 
     def filter_runner_framework(self) -> None:
-        if not self.runner_filter:
-            return
-        if not self.runner_filter.framework:
-            return
-        if "all" in self.runner_filter.framework:
-            return
-        self.runners = [runner for runner in self.runners if runner.check_type in self.runner_filter.framework]
+        self.runners = filter_runner_framework(self.runners, self.runner_filter)
 
     def filter_runners_for_files(self, files: List[str]) -> None:
         if not files:
@@ -774,14 +795,6 @@ class RunnerRegistry:
                                 "skipped_checks": skipped_checks,
                             }
         return enriched_resources
-
-    def _get_image_referencing_runners(self) -> set[ImageReferencer]:
-        image_referencing_runners: set[ImageReferencer] = set()
-        for runner in self.runners:
-            if issubclass(runner.__class__, ImageReferencer):
-                image_referencing_runners.add(cast(ImageReferencer, runner))
-
-        return image_referencing_runners
 
     @staticmethod
     def strip_code_blocks_from_json(report_jsons: List[Dict[str, Any]]) -> None:
