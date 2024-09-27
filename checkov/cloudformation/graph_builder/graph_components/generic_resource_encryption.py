@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from checkov.common.graph.graph_builder import EncryptionTypes
+from checkov.common.graph.graph_builder.graph_components.attribute_names import EncryptionTypes
 from checkov.common.graph.graph_builder.graph_components.generic_resource_encryption_base import GenericResourceEncryptionBase
 from checkov.common.util.data_structures_utils import get_empty_list_str
 

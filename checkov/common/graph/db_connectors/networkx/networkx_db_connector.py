@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, TypeVar
 import networkx as nx
 
 from checkov.common.graph.db_connectors.db_connector import DBConnector
-from checkov.common.graph.graph_builder import CustomAttributes
+from checkov.common.graph.graph_builder.graph_components.attribute_names import CustomAttributes
 
 if TYPE_CHECKING:
     from checkov.common.graph.graph_builder.graph_components.blocks import Block  # noqa

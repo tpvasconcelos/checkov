@@ -7,7 +7,8 @@ from checkov.cloudformation.graph_builder.graph_components.block_types import Bl
 from checkov.cloudformation.graph_builder.utils import get_referenced_vertices_in_value, find_all_interpolations
 from checkov.cloudformation.graph_builder.variable_rendering.vertex_reference import VertexReference
 from checkov.cloudformation.parser.cfn_keywords import IntrinsicFunctions, ConditionFunctions
-from checkov.common.graph.graph_builder import Edge, CustomAttributes
+from checkov.common.graph.graph_builder.graph_components.edge import Edge
+from checkov.common.graph.graph_builder.graph_components.attribute_names import CustomAttributes
 from checkov.common.graph.graph_builder.graph_components.blocks import Block
 from checkov.common.graph.graph_builder.variable_rendering.renderer import VariableRenderer
 from checkov.common.util.data_structures_utils import pickle_deepcopy

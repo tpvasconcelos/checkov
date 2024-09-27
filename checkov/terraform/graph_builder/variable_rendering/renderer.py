@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, List, Dict, Any, Tuple, Union, Optional, cast
 
 from lark.tree import Tree
 
-from checkov.common.graph.graph_builder import Edge
+from checkov.common.graph.graph_builder.graph_components.edge import Edge
 from checkov.common.graph.graph_builder.utils import join_trimmed_strings
 from checkov.common.graph.graph_builder.variable_rendering.renderer import VariableRenderer
 from checkov.common.util.data_structures_utils import find_in_dict, pickle_deepcopy

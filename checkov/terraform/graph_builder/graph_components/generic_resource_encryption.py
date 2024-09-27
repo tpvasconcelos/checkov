@@ -1,5 +1,5 @@
 from typing import Dict, List, Union, Any
-from checkov.common.graph.graph_builder import EncryptionTypes
+from checkov.common.graph.graph_builder.graph_components.attribute_names import EncryptionTypes
 from checkov.common.graph.graph_builder.graph_components.generic_resource_encryption_base import (
     GenericResourceEncryptionBase,
 )

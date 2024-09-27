@@ -4,7 +4,7 @@ from typing import Union, Dict, Any, List, Optional, Set, cast
 import dpath
 import re
 
-from checkov.common.graph.graph_builder import CustomAttributes
+from checkov.common.graph.graph_builder.graph_components.attribute_names import CustomAttributes
 from checkov.common.graph.graph_builder.utils import calculate_hash
 from checkov.common.typing import TFDefinitionKeyType
 from checkov.terraform.graph_builder.utils import INTERPOLATION_EXPR

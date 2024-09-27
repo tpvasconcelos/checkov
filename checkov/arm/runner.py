@@ -12,7 +12,7 @@ from checkov.arm.graph_manager import ArmGraphManager
 from checkov.arm.registry import arm_resource_registry, arm_parameter_registry
 from checkov.arm.utils import get_scannable_file_paths, get_files_definitions, ARM_POSSIBLE_ENDINGS, ArmElements
 from checkov.common.checks_infra.registry import get_graph_checks_registry
-from checkov.common.graph.graph_builder import CustomAttributes
+from checkov.common.graph.graph_builder.graph_components.attribute_names import CustomAttributes
 from checkov.common.graph.graph_builder.consts import GraphSource
 from checkov.common.output.extra_resource import ExtraResource
 from checkov.common.output.record import Record

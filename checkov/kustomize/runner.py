@@ -14,7 +14,7 @@ import yaml
 from typing import Optional, Dict, Any, TextIO, TYPE_CHECKING
 
 
-from checkov.common.graph.graph_builder import CustomAttributes
+from checkov.common.graph.graph_builder.graph_components.attribute_names import CustomAttributes
 from checkov.common.graph.graph_builder.consts import GraphSource
 from checkov.common.images.image_referencer import Image
 from checkov.common.output.record import Record

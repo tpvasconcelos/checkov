@@ -4,7 +4,7 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from checkov.common.graph.graph_builder import CustomAttributes
+from checkov.common.graph.graph_builder.graph_components.attribute_names import CustomAttributes
 from checkov.common.graph.graph_builder.consts import GraphSource, SELF_REFERENCE
 from checkov.common.graph.graph_builder.graph_components.block_types import BlockType
 from checkov.common.graph.graph_builder.graph_components.blocks import Block

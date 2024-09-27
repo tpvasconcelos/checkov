@@ -8,7 +8,7 @@ from typing import Any, TYPE_CHECKING
 import yaml
 from termcolor import colored
 
-from checkov.common.graph.graph_builder import CustomAttributes
+from checkov.common.graph.graph_builder.graph_components.attribute_names import CustomAttributes
 from checkov.common.resource_code_logger_filter import add_resource_code_filter_to_logger
 from checkov.common.util.env_vars_config import env_vars_config
 

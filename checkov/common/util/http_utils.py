@@ -3,16 +3,11 @@ from __future__ import annotations
 import json
 import uuid
 
-import requests
 import logging
 import time
 import os
-import aiohttp
 import asyncio
 from typing import Any, TYPE_CHECKING, cast, Optional, overload
-
-from urllib3.response import HTTPResponse
-from urllib3.util import parse_url
 
 from checkov.common.resource_code_logger_filter import add_resource_code_filter_to_logger
 from checkov.common.util.consts import DEV_API_GET_HEADERS, DEV_API_POST_HEADERS, PRISMA_API_GET_HEADERS, \
@@ -24,6 +19,7 @@ from checkov.version import version as checkov_version
 if TYPE_CHECKING:
     from checkov.common.bridgecrew.bc_source import SourceType
     from requests import Response
+    from urllib3.response import HTTPResponse
 
 # https://requests.readthedocs.io/en/latest/user/advanced/#timeouts
 REQUEST_CONNECT_TIMEOUT = force_float(os.getenv("CHECKOV_REQUEST_CONNECT_TIMEOUT")) or 3.1
@@ -72,10 +68,13 @@ def get_auth_error_message(status: int, is_prisma: bool, is_s3_upload: bool) -> 
     return error_message
 
 
-def extract_error_message(response: requests.Response | HTTPResponse) -> Optional[str]:
-    if (isinstance(response, requests.Response) and response.content) or (
+def extract_error_message(response: Response | HTTPResponse) -> Optional[str]:
+    from requests import Response
+    from urllib3.response import HTTPResponse
+
+    if (isinstance(response, Response) and response.content) or (
             isinstance(response, HTTPResponse) and response.data):
-        raw = response.content if isinstance(response, requests.Response) else response.data
+        raw = response.content if isinstance(response, Response) else response.data
         try:
             content = json.loads(raw)
             if 'message' in content:
@@ -126,6 +125,7 @@ def get_prisma_get_headers() -> dict[str, str]:
 
 def valid_url(url: str | None) -> bool:
     """Checks for a valid URL, otherwise returns False"""
+    from urllib3.util import parse_url
 
     if not url:
         return False
@@ -147,6 +147,8 @@ def request_wrapper(
         params: dict[str, Any] | None = None,
         log_json_body: bool = True
 ) -> Response:
+    import requests
+
     # using of "retry" mechanism for 'requests.request' due to unpredictable 'ConnectionError' and 'HttpError'
     # instances that appears from time to time.
     # 'ConnectionError' instances that appeared:
@@ -208,6 +210,8 @@ async def aiohttp_client_session_wrapper(
         headers: dict[str, Any],
         payload: dict[str, Any]
 ) -> int:
+    import aiohttp
+
     request_max_tries = int(os.getenv('REQUEST_MAX_TRIES', 3))
     sleep_between_request_tries = float(os.getenv('SLEEP_BETWEEN_REQUEST_TRIES', 1))
 

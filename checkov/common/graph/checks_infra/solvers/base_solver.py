@@ -4,7 +4,7 @@ from abc import abstractmethod
 from typing import Tuple, List, Dict, Any, TYPE_CHECKING
 
 from checkov.common.graph.checks_infra.enums import SolverType
-from checkov.common.graph.graph_builder import CustomAttributes
+from checkov.common.graph.graph_builder.graph_components.attribute_names import CustomAttributes
 from checkov.common.util.env_vars_config import env_vars_config
 
 if TYPE_CHECKING:

@@ -4,7 +4,7 @@ import logging
 from typing import Any, List, Dict
 from collections import defaultdict
 
-from checkov.common.graph.graph_builder import Edge
+from checkov.common.graph.graph_builder.graph_components.edge import Edge
 from checkov.common.graph.graph_builder.local_graph import LocalGraph
 from checkov.common.util.consts import START_LINE, END_LINE
 from checkov.common.util.data_structures_utils import pickle_deepcopy

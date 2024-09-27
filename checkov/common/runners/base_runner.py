@@ -9,9 +9,8 @@ from collections.abc import Iterable
 from typing import List, Any, TYPE_CHECKING, TypeVar, Generic, Dict, Optional
 
 from checkov.common.graph.db_connectors.networkx.networkx_db_connector import NetworkxConnector
-from checkov.common.graph.graph_builder import CustomAttributes
+from checkov.common.graph.graph_builder.graph_components.attribute_names import CustomAttributes
 from checkov.common.util.tqdm_utils import ProgressBar
-
 from checkov.common.graph.checks_infra.base_check import BaseGraphCheck
 from checkov.common.output.report import Report
 from checkov.runner_filter import RunnerFilter

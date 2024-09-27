@@ -4,7 +4,7 @@ import os
 
 from hcl2 import START_LINE as HCL_START_LINE, END_LINE as HCL_END_LINE
 
-from checkov.common.graph.graph_builder import CustomAttributes
+from checkov.common.graph.graph_builder.graph_components.attribute_names import CustomAttributes
 from checkov.common.images.graph.image_referencer_provider import GraphImageReferencerProvider
 from checkov.common.images.image_referencer import Image
 from checkov.common.util.consts import START_LINE, END_LINE

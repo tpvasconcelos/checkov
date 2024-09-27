@@ -2,61 +2,17 @@ from __future__ import annotations
 
 import logging
 from typing import Dict, Any, List, Optional, Type, TYPE_CHECKING
+from importlib import import_module
 
 from checkov.common.bridgecrew.severities import get_severity
-from checkov.common.checks_infra.solvers import (
-    EqualsAttributeSolver,
-    NotEqualsAttributeSolver,
-    RegexMatchAttributeSolver,
-    NotRegexMatchAttributeSolver,
-    ExistsAttributeSolver,
-    AnyResourceSolver,
-    ContainsAttributeSolver,
-    NotExistsAttributeSolver,
-    WithinAttributeSolver,
-    NotContainsAttributeSolver,
-    StartingWithAttributeSolver,
-    NotStartingWithAttributeSolver,
-    EndingWithAttributeSolver,
-    NotEndingWithAttributeSolver,
-    AndSolver,
-    OrSolver,
-    NotSolver,
+from checkov.common.checks_infra.solvers.complex_solvers import AndSolver, OrSolver, NotSolver
+from checkov.common.checks_infra.solvers.connections_solvers import (
     ConnectionExistsSolver,
     ConnectionNotExistsSolver,
     AndConnectionSolver,
     OrConnectionSolver,
-    WithinFilterSolver,
-    GreaterThanAttributeSolver,
-    GreaterThanOrEqualAttributeSolver,
-    LessThanAttributeSolver,
-    LessThanOrEqualAttributeSolver,
-    SubsetAttributeSolver,
-    NotSubsetAttributeSolver,
-    IsEmptyAttributeSolver,
-    IsNotEmptyAttributeSolver,
-    LengthEqualsAttributeSolver,
-    LengthNotEqualsAttributeSolver,
-    LengthGreaterThanAttributeSolver,
-    LengthLessThanAttributeSolver,
-    LengthLessThanOrEqualAttributeSolver,
-    LengthGreaterThanOrEqualAttributeSolver,
-    IsTrueAttributeSolver,
-    IsFalseAttributeSolver,
-    IntersectsAttributeSolver,
-    NotIntersectsAttributeSolver,
-    EqualsIgnoreCaseAttributeSolver,
-    NotEqualsIgnoreCaseAttributeSolver,
-    RangeIncludesAttributeSolver,
-    RangeNotIncludesAttributeSolver,
-    NumberOfWordsEqualsAttributeSolver,
-    NumberOfWordsNotEqualsAttributeSolver,
-    NumberOfWordsGreaterThanAttributeSolver,
-    NumberOfWordsGreaterThanOrEqualAttributeSolver,
-    NumberOfWordsLessThanAttributeSolver,
-    NumberOfWordsLessThanOrEqualAttributeSolver,
-    NotWithinAttributeSolver,
 )
+from checkov.common.checks_infra.solvers.filter_solvers import WithinFilterSolver
 from checkov.common.checks_infra.solvers.connections_solvers.connection_one_exists_solver import \
     ConnectionOneExistsSolver
 from checkov.common.checks_infra.solvers.resource_solvers import ExistsResourcerSolver, NotExistsResourcerSolver
@@ -76,51 +32,66 @@ if TYPE_CHECKING:
     from checkov.common.checks_infra.solvers.filter_solvers.base_filter_solver import BaseFilterSolver
 
 
-operators_to_attributes_solver_classes: dict[str, Type[BaseAttributeSolver]] = {
-    "equals": EqualsAttributeSolver,
-    "not_equals": NotEqualsAttributeSolver,
-    "regex_match": RegexMatchAttributeSolver,
-    "not_regex_match": NotRegexMatchAttributeSolver,
-    "exists": ExistsAttributeSolver,
-    "any": AnyResourceSolver,
-    "contains": ContainsAttributeSolver,
-    "not_exists": NotExistsAttributeSolver,
-    "within": WithinAttributeSolver,
-    "not_within": NotWithinAttributeSolver,
-    "not_contains": NotContainsAttributeSolver,
-    "starting_with": StartingWithAttributeSolver,
-    "not_starting_with": NotStartingWithAttributeSolver,
-    "ending_with": EndingWithAttributeSolver,
-    "not_ending_with": NotEndingWithAttributeSolver,
-    "greater_than": GreaterThanAttributeSolver,
-    "greater_than_or_equal": GreaterThanOrEqualAttributeSolver,
-    "less_than": LessThanAttributeSolver,
-    "less_than_or_equal": LessThanOrEqualAttributeSolver,
-    "subset": SubsetAttributeSolver,
-    "not_subset": NotSubsetAttributeSolver,
-    "is_empty": IsEmptyAttributeSolver,
-    "is_not_empty": IsNotEmptyAttributeSolver,
-    "length_equals": LengthEqualsAttributeSolver,
-    "length_not_equals": LengthNotEqualsAttributeSolver,
-    "length_greater_than": LengthGreaterThanAttributeSolver,
-    "length_greater_than_or_equal": LengthGreaterThanOrEqualAttributeSolver,
-    "length_less_than": LengthLessThanAttributeSolver,
-    "length_less_than_or_equal": LengthLessThanOrEqualAttributeSolver,
-    "is_true": IsTrueAttributeSolver,
-    "is_false": IsFalseAttributeSolver,
-    "intersects": IntersectsAttributeSolver,
-    "not_intersects": NotIntersectsAttributeSolver,
-    "equals_ignore_case": EqualsIgnoreCaseAttributeSolver,
-    "not_equals_ignore_case": NotEqualsIgnoreCaseAttributeSolver,
-    "range_includes": RangeIncludesAttributeSolver,
-    "range_not_includes": RangeNotIncludesAttributeSolver,
-    "number_of_words_equals": NumberOfWordsEqualsAttributeSolver,
-    "number_of_words_not_equals": NumberOfWordsNotEqualsAttributeSolver,
-    "number_of_words_greater_than": NumberOfWordsGreaterThanAttributeSolver,
-    "number_of_words_greater_than_or_equal": NumberOfWordsGreaterThanOrEqualAttributeSolver,
-    "number_of_words_less_than_or_equal": NumberOfWordsLessThanOrEqualAttributeSolver,
-    "number_of_words_less_than": NumberOfWordsLessThanAttributeSolver,
+_operators_to_attributes_solver_classes: dict[str, Type[BaseAttributeSolver]] = {
+    "equals": ("equals_attribute_solver", "EqualsAttributeSolver"),
+    "not_equals": ("not_equals_attribute_solver", "NotEqualsAttributeSolver"),
+    "regex_match": ("regex_match_attribute_solver", "RegexMatchAttributeSolver"),
+    "not_regex_match": ("not_regex_match_attribute_solver", "NotRegexMatchAttributeSolver"),
+    "exists": ("exists_attribute_solver", "ExistsAttributeSolver"),
+    "any": ("any_attribute_solver", "AnyResourceSolver"),
+    "contains": ("contains_attribute_solver", "ContainsAttributeSolver"),
+    "not_exists": ("not_exists_attribute_solver", "NotExistsAttributeSolver"),
+    "within": ("within_attribute_solver", "WithinAttributeSolver"),
+    "not_within": ("not_within_attribute_solver", "NotWithinAttributeSolver"),
+    "not_contains": ("not_contains_attribute_solver", "NotContainsAttributeSolver"),
+    "starting_with": ("starting_with_attribute_solver", "StartingWithAttributeSolver"),
+    "not_starting_with": ("not_starting_with_attribute_solver", "NotStartingWithAttributeSolver"),
+    "ending_with": ("ending_with_attribute_solver", "EndingWithAttributeSolver"),
+    "not_ending_with": ("not_ending_with_attribute_solver", "NotEndingWithAttributeSolver"),
+    "greater_than": ("greater_than_attribute_solver", "GreaterThanAttributeSolver"),
+    "greater_than_or_equal": ("greater_than_or_equal_attribute_solver", "GreaterThanOrEqualAttributeSolver"),
+    "less_than": ("less_than_attribute_solver", "LessThanAttributeSolver"),
+    "less_than_or_equal": ("less_than_or_equal_attribute_solver", "LessThanOrEqualAttributeSolver"),
+    "subset": ("subset_attribute_solver", "SubsetAttributeSolver"),
+    "not_subset": ("not_subset_attribute_solver", "NotSubsetAttributeSolver"),
+    "is_empty": ("is_empty_attribute_solver", "IsEmptyAttributeSolver"),
+    "is_not_empty": ("is_not_empty_attribute_solver", "IsNotEmptyAttributeSolver"),
+    "length_equals": ("length_equals_attribute_solver", "LengthEqualsAttributeSolver"),
+    "length_not_equals": ("length_not_equals_attribute_solver", "LengthNotEqualsAttributeSolver"),
+    "length_greater_than": ("length_greater_than_attribute_solver", "LengthGreaterThanAttributeSolver"),
+    "length_greater_than_or_equal": ("length_greater_than_or_equal_attribute_solver", "LengthGreaterThanOrEqualAttributeSolver"),
+    "length_less_than": ("length_less_than_attribute_solver", "LengthLessThanAttributeSolver"),
+    "length_less_than_or_equal": ("length_less_than_or_equal_attribute_solver", "LengthLessThanOrEqualAttributeSolver"),
+    "is_true": ("is_true_attribute_solver", "IsTrueAttributeSolver"),
+    "is_false": ("is_false_attribute_solver", "IsFalseAttributeSolver"),
+    "intersects": ("intersects_attribute_solver", "IntersectsAttributeSolver"),
+    "not_intersects": ("not_intersects_attribute_solver", "NotIntersectsAttributeSolver"),
+    "equals_ignore_case": ("equals_ignore_case_attribute_solver", "EqualsIgnoreCaseAttributeSolver"),
+    "not_equals_ignore_case": ("not_equals_ignore_case_attribute_solver", "NotEqualsIgnoreCaseAttributeSolver"),
+    "range_includes": ("range_includes_attribute_solver", "RangeIncludesAttributeSolver"),
+    "range_not_includes": ("range_not_includes_attribute_solver", "RangeNotIncludesAttributeSolver"),
+    "number_of_words_equals": ("number_of_words_equals_attribute_solver", "NumberOfWordsEqualsAttributeSolver"),
+    "number_of_words_not_equals": ("number_of_words_not_equals_attribute_solver", "NumberOfWordsNotEqualsAttributeSolver"),
+    "number_of_words_greater_than": ("number_of_words_greater_than_attribute_solver", "NumberOfWordsGreaterThanAttributeSolver"),
+    "number_of_words_greater_than_or_equal": ("number_of_words_greater_than_or_equal_attribute_solver", "NumberOfWordsGreaterThanOrEqualAttributeSolver"),
+    "number_of_words_less_than_or_equal": ("number_of_words_less_than_or_equal_attribute_solver", "NumberOfWordsLessThanOrEqualAttributeSolver"),
+    "number_of_words_less_than": ("number_of_words_less_than_attribute_solver", "NumberOfWordsLessThanAttributeSolver"),
 }
+_attribute_solvers_cache: dict[str, Type[BaseAttributeSolver]] = {}
+
+def get_operators_to_attributes_solver_class(solver: str, default=None) -> Type[BaseAttributeSolver]:
+    if solver in _attribute_solvers_cache:
+        return _attribute_solvers_cache[solver]
+    if solver not in _operators_to_attributes_solver_classes:
+        _attribute_solvers_cache[solver] = default
+        return default
+    module_prefix = "checkov.common.checks_infra.solvers.attribute_solvers"
+    module_suffix, class_name = _operators_to_attributes_solver_classes[solver]
+    module_qual = f"{module_prefix}.{module_suffix}"
+    module = import_module(module_qual)
+    klass =  getattr(module, class_name)
+    _attribute_solvers_cache[solver] = klass
+    return klass
 
 operators_to_complex_solver_classes: dict[str, Type[BaseComplexSolver]] = {
     "and": AndSolver,
@@ -291,7 +262,10 @@ class GraphCheckParser(BaseGraphCheckParser):
         else:
             solver = check.operator
 
-        return operators_to_attributes_solver_classes.get(solver, lambda *args: None)(
+        attributes_solver_class = get_operators_to_attributes_solver_class(solver, None)
+        if attributes_solver_class is None:
+            return attributes_solver_class
+        return attributes_solver_class(
             check.resource_types, check.attribute, check.attribute_value, check.is_jsonpath_check
         )
 

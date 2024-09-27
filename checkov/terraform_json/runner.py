@@ -8,7 +8,7 @@ from typing_extensions import TypeAlias  # noqa[TC002]
 
 from checkov.common.bridgecrew.check_type import CheckType
 from checkov.common.checks_infra.registry import get_graph_checks_registry
-from checkov.common.graph.graph_builder import CustomAttributes
+from checkov.common.graph.graph_builder.graph_components.attribute_names import CustomAttributes
 from checkov.common.graph.graph_builder.consts import GraphSource
 from checkov.common.output.graph_record import GraphRecord
 from checkov.common.output.record import Record

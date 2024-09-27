@@ -13,7 +13,7 @@ from typing_extensions import TypeAlias  # noqa[TC002]
 from checkov.common.checks_infra.registry import get_graph_checks_registry
 from checkov.common.models.enums import CheckResult
 from checkov.common.typing import LibraryGraphConnector
-from checkov.common.graph.graph_builder import CustomAttributes
+from checkov.common.graph.graph_builder.graph_components.attribute_names import CustomAttributes
 from checkov.common.output.github_actions_record import GithubActionsRecord
 from checkov.common.output.record import Record
 from checkov.common.output.report import Report, CheckType

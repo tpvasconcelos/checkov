@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 
 from checkov.bicep.utils import BICEP_START_LINE, BICEP_END_LINE
-from checkov.common.graph.graph_builder import CustomAttributes
+from checkov.common.graph.graph_builder.graph_components.attribute_names import CustomAttributes
 from checkov.common.images.graph.image_referencer_provider import GraphImageReferencerProvider
 from checkov.common.images.image_referencer import Image
 from checkov.common.util.str_utils import removeprefix

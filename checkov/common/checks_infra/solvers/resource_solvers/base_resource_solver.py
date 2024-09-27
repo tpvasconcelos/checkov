@@ -11,7 +11,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 from checkov.common.graph.checks_infra.enums import SolverType
 from checkov.common.graph.checks_infra.solvers.base_solver import BaseSolver
-from checkov.common.graph.graph_builder import CustomAttributes
+from checkov.common.graph.graph_builder.graph_components.attribute_names import CustomAttributes
 
 if TYPE_CHECKING:
     from checkov.common.typing import LibraryGraph

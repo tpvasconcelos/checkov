@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Any, Dict
-from checkov.common.graph.graph_builder import CustomAttributes
+from checkov.common.graph.graph_builder.graph_components.attribute_names import CustomAttributes
 from checkov.terraform.checks.resource.base_resource_check import BaseResourceCheck
 from checkov.common.models.enums import CheckCategories, CheckResult
 

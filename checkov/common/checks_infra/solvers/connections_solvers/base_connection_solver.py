@@ -3,11 +3,9 @@ from __future__ import annotations
 import itertools
 from typing import Any, List, Dict, Optional, Tuple, TYPE_CHECKING
 
-from networkx import DiGraph
-
 from checkov.common.graph.checks_infra.enums import SolverType
 from checkov.common.graph.checks_infra.solvers.base_solver import BaseSolver
-from checkov.common.graph.graph_builder import CustomAttributes
+from checkov.common.graph.graph_builder.graph_components.attribute_names import CustomAttributes
 from checkov.terraform.graph_builder.graph_components.block_types import BlockType
 
 if TYPE_CHECKING:
@@ -50,6 +48,8 @@ class BaseConnectionSolver(BaseSolver):
         return vertex_type in itertools.chain(self.resource_types, self.connected_resources_types)
 
     def set_vertices(self, graph_connector: LibraryGraph, exclude_vertices: List[Dict[str, Any]], unknown_vertices: List[Dict[str, Any]]) -> None:
+        from networkx import DiGraph
+
         if isinstance(graph_connector, DiGraph):
             self.vertices_under_resource_types = [
                 v for _, v in graph_connector.nodes(data=True) if self.resource_type_pred(v, self.resource_types)
@@ -78,6 +78,8 @@ class BaseConnectionSolver(BaseSolver):
         ]
 
     def reduce_graph_by_target_types(self, graph_connector: LibraryGraph) -> LibraryGraph:
+        from networkx import DiGraph
+
         # no need to create a subgraph, if there are no vertices to be checked
         if not self.vertices_under_resource_types:
             return graph_connector

@@ -13,7 +13,7 @@ from checkov.cloudformation.parser.cfn_keywords import IntrinsicFunctions, Condi
     TemplateSections
 from checkov.common.graph.graph_builder.consts import GraphSource
 from checkov.common.parsers.node import DictNode
-from checkov.common.graph.graph_builder import Edge
+from checkov.common.graph.graph_builder.graph_components.edge import Edge
 from checkov.common.graph.graph_builder.local_graph import LocalGraph
 from checkov.common.util.consts import START_LINE, END_LINE
 from checkov.common.util.data_structures_utils import search_deep_keys

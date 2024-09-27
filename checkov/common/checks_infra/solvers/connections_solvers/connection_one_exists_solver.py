@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from typing import List, Optional, Dict, Any, Tuple, TYPE_CHECKING
-from checkov.common.checks_infra.solvers import ConnectionExistsSolver
+from checkov.common.checks_infra.solvers.connections_solvers import ConnectionExistsSolver
 from checkov.common.graph.checks_infra import debug
 from checkov.common.graph.checks_infra.enums import Operators
 

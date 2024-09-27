@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from typing import List, Dict, Any, Tuple
 
-from checkov.common.graph.graph_builder import CustomAttributes
+from checkov.common.graph.graph_builder.graph_components.attribute_names import CustomAttributes
 from checkov.terraform.modules.module_objects import TFDefinitionKey
 from checkov.terraform.graph_builder.graph_components.block_types import BlockType
 from checkov.terraform.graph_builder.graph_components.blocks import TerraformBlock

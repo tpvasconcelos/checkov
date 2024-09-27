@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 from itertools import islice
 from pathlib import Path
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, TYPE_CHECKING
 
 import dpath
 
@@ -14,8 +14,11 @@ from checkov.common.bridgecrew.integration_features.features.policy_metadata_int
 from checkov.common.comment.enum import COMMENT_REGEX
 from checkov.common.models.enums import ContextCategories
 from checkov.common.resource_code_logger_filter import add_resource_code_filter_to_logger
-from checkov.terraform import TFDefinitionKey, get_abs_path
 from checkov.terraform.context_parsers.registry import parser_registry
+from checkov.terraform.modules.module_utils import get_abs_path
+
+if TYPE_CHECKING:
+    from checkov.terraform.modules.module_objects import TFDefinitionKey
 
 OPEN_CURLY = "{"
 CLOSE_CURLY = "}"

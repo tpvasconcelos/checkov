@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Any, Mapping
 
-from checkov.common.graph.graph_builder import CustomAttributes
+from checkov.common.graph.graph_builder.graph_components.attribute_names import CustomAttributes
 from checkov.common.typing import LibraryGraph
 from checkov.kubernetes.image_referencer.base_provider import BaseKubernetesProvider
 from checkov.common.images.graph.image_referencer_provider import _ExtractImagesCallableAlias

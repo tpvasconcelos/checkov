@@ -7,7 +7,6 @@ import json
 from typing import List, Tuple, Dict, Any, Optional, Pattern, TYPE_CHECKING
 
 from bc_jsonpath_ng.ext import parse
-from networkx import DiGraph
 
 from checkov.common.graph.checks_infra import debug
 from checkov.common.graph.checks_infra.enums import SolverType
@@ -15,9 +14,8 @@ from checkov.common.graph.checks_infra.solvers.base_solver import BaseSolver
 
 from concurrent.futures import ThreadPoolExecutor
 
-from checkov.common.graph.graph_builder import CustomAttributes
+from checkov.common.graph.graph_builder.graph_components.attribute_names import CustomAttributes
 from checkov.common.graph.graph_builder.graph_components.block_types import BlockType
-from checkov.common.util.var_utils import is_terraform_variable_dependent
 from checkov.terraform.graph_builder.graph_components.block_types import BlockType as TerraformBlockType
 
 if TYPE_CHECKING:
@@ -43,6 +41,8 @@ class BaseAttributeSolver(BaseSolver):
         self.is_jsonpath_check = is_jsonpath_check
 
     def run(self, graph_connector: LibraryGraph) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]], List[Dict[str, Any]]]:
+        from networkx import DiGraph
+
         executer = ThreadPoolExecutor()
         jobs = []
         passed_vertices: List[Dict[str, Any]] = []
@@ -222,6 +222,8 @@ class BaseAttributeSolver(BaseSolver):
 
     @staticmethod
     def _is_variable_dependant(value: Any, source: str) -> bool:
+        from checkov.common.util.var_utils import is_terraform_variable_dependent
+
         if source.lower() == 'terraform' and is_terraform_variable_dependent(value):
             return True
         # TODO add logic for CloudFormation

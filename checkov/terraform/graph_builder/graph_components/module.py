@@ -7,7 +7,6 @@ from ast import literal_eval
 
 from checkov.common.typing import TFDefinitionKeyType
 from checkov.common.util.data_structures_utils import pickle_deepcopy
-from checkov.terraform import TFDefinitionKey
 from checkov.terraform.graph_builder.graph_components.block_types import BlockType
 from checkov.terraform.graph_builder.graph_components.blocks import TerraformBlock
 from checkov.terraform.parser_functions import handle_dynamic_values
@@ -15,6 +14,7 @@ from hcl2 import START_LINE, END_LINE
 
 if TYPE_CHECKING:
     from typing_extensions import TypeAlias
+    from checkov.terraform.modules.module_objects import TFDefinitionKey
 
 _AddBlockTypeCallable: TypeAlias = "Callable[[Module, list[dict[str, dict[str, Any]]], TFDefinitionKeyType], None]"
 

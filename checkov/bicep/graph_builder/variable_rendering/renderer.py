@@ -6,7 +6,7 @@ from pycep.transformer import BicepElement
 
 from checkov.bicep.graph_builder.graph_components.block_types import BlockType
 from checkov.bicep.utils import adjust_value
-from checkov.common.graph.graph_builder import Edge
+from checkov.common.graph.graph_builder.graph_components.edge import Edge
 from checkov.common.graph.graph_builder.variable_rendering.renderer import VariableRenderer
 from checkov.common.util.data_structures_utils import pickle_deepcopy
 

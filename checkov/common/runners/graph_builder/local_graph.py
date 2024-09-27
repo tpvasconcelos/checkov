@@ -5,7 +5,7 @@ from abc import abstractmethod
 from pathlib import Path
 from typing import Any
 
-from checkov.common.graph.graph_builder import Edge
+from checkov.common.graph.graph_builder.graph_components.edge import Edge
 from checkov.common.graph.graph_builder.graph_components.blocks import Block
 from checkov.common.graph.graph_builder.local_graph import LocalGraph
 

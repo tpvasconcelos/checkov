@@ -5,7 +5,7 @@ import typing
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Callable, Any, Mapping, Generator
 
-from checkov.common.graph.graph_builder import CustomAttributes
+from checkov.common.graph.graph_builder.graph_components.attribute_names import CustomAttributes
 from checkov.common.images.image_referencer import Image
 from checkov.common.typing import LibraryGraph, _RustworkxGraph
 
