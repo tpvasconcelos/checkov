@@ -256,7 +256,9 @@ class TestRunnerRegistry(unittest.TestCase):
             banner, runner_filter, *LAZY_DEFAULT_RUNNERS
         )
         runner_registry.filter_runners_for_files([])
-        self.assertEqual(set(runner_registry.runners), set(LAZY_DEFAULT_RUNNERS))
+        runners_filtered = set(r.__class__ for r in runner_registry.runners)
+        runners_expected = set(r.load_runner_class() for r in LAZY_DEFAULT_RUNNERS)
+        self.assertEqual(runners_filtered, runners_expected)
 
         runner_filter = RunnerFilter(framework=['all'], runners=checkov_runners)
         runner_registry = RunnerRegistry(
