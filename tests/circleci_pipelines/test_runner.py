@@ -6,7 +6,7 @@ from checkov.circleci_pipelines.runner import Runner
 from checkov.common.bridgecrew.check_type import CheckType
 from checkov.common.bridgecrew.severities import Severities, BcSeverities
 from checkov.runner_filter import RunnerFilter
-from checkov.circleci_pipelines.registry import registry
+from checkov.circleci_pipelines.checks.registry import registry
 
 
 class TestRunnerValid(unittest.TestCase):

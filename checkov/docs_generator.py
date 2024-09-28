@@ -15,17 +15,17 @@ from checkov.arm.registry import arm_resource_registry, arm_parameter_registry
 from checkov.azure_pipelines.checks.registry import registry as azure_pipelines_registry
 from checkov.bicep.checks.param.registry import registry as bicep_param_registry
 from checkov.bicep.checks.resource.registry import registry as bicep_resource_registry
-from checkov.bitbucket.registry import registry as bitbucket_configuration_registry
-from checkov.bitbucket_pipelines.registry import registry as bitbucket_pipelines_registry
-from checkov.circleci_pipelines.registry import registry as circleci_pipelines_registry
+from checkov.bitbucket.checks.registry import registry as bitbucket_configuration_registry
+from checkov.circleci_pipelines.checks.registry import registry as bitbucket_pipelines_registry
+from checkov.circleci_pipelines.checks.registry import registry as circleci_pipelines_registry
 from checkov.cloudformation.checks.resource.registry import cfn_registry as cfn_registry
 from checkov.common.checks.base_check_registry import BaseCheckRegistry
 from checkov.common.checks_infra.registry import BaseRegistry as BaseGraphRegistry, get_graph_checks_registry
 from checkov.common.runners.base_runner import strtobool
 from checkov.dockerfile.registry import registry as dockerfile_registry
-from checkov.github.registry import registry as github_configuration_registry
+from checkov.github.checks.registry import registry as github_configuration_registry
 from checkov.github_actions.checks.registry import registry as github_actions_jobs_registry
-from checkov.gitlab.registry import registry as gitlab_configuration_registry
+from checkov.gitlab.checks.registry import registry as gitlab_configuration_registry
 from checkov.gitlab_ci.checks.registry import registry as gitlab_ci_jobs_registry
 from checkov.kubernetes.checks.resource.registry import registry as k8_registry
 from checkov.secrets.runner import CHECK_ID_TO_SECRET_TYPE
@@ -34,7 +34,7 @@ from checkov.terraform.checks.data.registry import data_registry
 from checkov.terraform.checks.module.registry import module_registry
 from checkov.terraform.checks.provider.registry import provider_registry
 from checkov.terraform.checks.resource.registry import resource_registry
-from checkov.openapi.checks.registry import openapi_registry
+from checkov.openapi.checks.registry import registry as openapi_registry
 from checkov.common.bridgecrew.integration_features.features.policy_metadata_integration import integration as metadata_integration
 from checkov.runner_filter import RunnerFilter
 

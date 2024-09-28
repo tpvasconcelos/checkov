@@ -16,7 +16,7 @@ from checkov.common.util.data_structures_utils import pickle_deepcopy
 from checkov.common.util.deep_merge import pickle_deep_merge
 from checkov.common.util.type_forcers import force_list
 from checkov.common.variables.context import EvaluationContext
-from checkov.terraform import validate_malformed_definitions, clean_bad_definitions
+from checkov.terraform.modules import validate_malformed_definitions, clean_bad_definitions
 from checkov.terraform.graph_builder.graph_components.block_types import BlockType
 from checkov.terraform.graph_builder.graph_components.module import Module
 from checkov.terraform.module_loading.content import ModuleContent

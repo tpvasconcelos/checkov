@@ -4,7 +4,7 @@ import logging
 import os
 from typing import TYPE_CHECKING, Any, Iterable
 
-from checkov.circleci_pipelines.registry import registry
+from checkov.circleci_pipelines.checks.registry import registry
 from checkov.common.output.report import CheckType, Report
 from checkov.runner_filter import RunnerFilter
 from checkov.yaml_doc.runner import Runner as YamlRunner

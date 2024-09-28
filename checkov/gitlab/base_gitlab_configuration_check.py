@@ -5,7 +5,7 @@ from typing import Iterable
 from checkov.common.checks.base_check import BaseCheck
 from checkov.common.models.enums import CheckCategories
 
-from checkov.gitlab.registry import registry
+from checkov.gitlab.checks.registry import registry
 
 
 class BaseGitlabCheck(BaseCheck):

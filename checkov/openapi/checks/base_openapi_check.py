@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Iterable, TYPE_CHECKING
 
 from checkov.common.checks.base_check import BaseCheck
-from checkov.openapi.checks.registry import openapi_registry as registry
+from checkov.openapi.checks.registry import registry
 
 if TYPE_CHECKING:
     from checkov.common.models.enums import CheckCategories
