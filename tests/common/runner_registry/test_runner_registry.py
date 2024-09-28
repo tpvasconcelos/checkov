@@ -23,7 +23,7 @@ from checkov.common.output.report import Report
 from checkov.common.runners.runner_registry import RunnerRegistry
 from checkov.common.util.banner import banner
 from checkov.kubernetes.runner import Runner as k8_runner
-from checkov.main import DEFAULT_RUNNERS
+from checkov.lazy_runner_registry import LAZY_DEFAULT_RUNNERS
 from checkov.runner_filter import RunnerFilter
 from checkov.sca_package_2.runner import Runner as sca_package_runner_2
 from checkov.terraform.runner import Runner as tf_runner
@@ -239,7 +239,7 @@ class TestRunnerRegistry(unittest.TestCase):
         scan_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'plan_with_hcl_for_enrichment', 'tfplan.json')
 
         runner_filter = RunnerFilter(framework=['terraform'], runners=checkov_runners)
-        runner_registry = RunnerRegistry('', runner_filter, *DEFAULT_RUNNERS)
+        runner_registry = RunnerRegistry('', runner_filter, *LAZY_DEFAULT_RUNNERS)
         runner_registry.filter_runners_for_files(['tfplan.json'])
         with self.assertLogs(level='ERROR') as log:
             reports = runner_registry.run(root_folder=None, files=[scan_file])
@@ -253,54 +253,54 @@ class TestRunnerRegistry(unittest.TestCase):
 
         runner_filter = RunnerFilter(framework=['all'], runners=checkov_runners)
         runner_registry = RunnerRegistry(
-            banner, runner_filter, *DEFAULT_RUNNERS
+            banner, runner_filter, *LAZY_DEFAULT_RUNNERS
         )
         runner_registry.filter_runners_for_files([])
-        self.assertEqual(set(runner_registry.runners), set(DEFAULT_RUNNERS))
+        self.assertEqual(set(runner_registry.runners), set(LAZY_DEFAULT_RUNNERS))
 
         runner_filter = RunnerFilter(framework=['all'], runners=checkov_runners)
         runner_registry = RunnerRegistry(
-            banner, runner_filter, *DEFAULT_RUNNERS
+            banner, runner_filter, *LAZY_DEFAULT_RUNNERS
         )
         runner_registry.filter_runners_for_files(['main.tf'])
         self.assertEqual(set(r.check_type for r in runner_registry.runners), {'terraform', 'secrets'})
 
         runner_registry = RunnerRegistry(
-            banner, runner_filter, *DEFAULT_RUNNERS, sca_package_runner_2()
+            banner, runner_filter, *LAZY_DEFAULT_RUNNERS, sca_package_runner_2()
         )
         runner_registry.filter_runners_for_files(['main.tf', 'requirements.txt'])
         self.assertEqual(set(r.check_type for r in runner_registry.runners), {'terraform', 'secrets', 'sca_package'})
 
         runner_filter = RunnerFilter(framework=['terraform'], runners=checkov_runners)
         runner_registry = RunnerRegistry(
-            banner, runner_filter, *DEFAULT_RUNNERS
+            banner, runner_filter, *LAZY_DEFAULT_RUNNERS
         )
         runner_registry.filter_runners_for_files(['main.tf'])
         self.assertEqual(set(r.check_type for r in runner_registry.runners), {'terraform'})
 
         runner_filter = RunnerFilter(framework=['all'], skip_framework=['secrets'], runners=checkov_runners)
         runner_registry = RunnerRegistry(
-            banner, runner_filter, *DEFAULT_RUNNERS
+            banner, runner_filter, *LAZY_DEFAULT_RUNNERS
         )
         runner_registry.filter_runners_for_files(['main.tf'])
         self.assertEqual(set(r.check_type for r in runner_registry.runners), {'terraform'})
 
         runner_filter = RunnerFilter(framework=['all'], skip_framework=['terraform'], runners=checkov_runners)
         runner_registry = RunnerRegistry(
-            banner, runner_filter, *DEFAULT_RUNNERS
+            banner, runner_filter, *LAZY_DEFAULT_RUNNERS
         )
         runner_registry.filter_runners_for_files(['main.tf'])
         self.assertEqual(set(r.check_type for r in runner_registry.runners), {'secrets'})
 
         runner_filter = RunnerFilter(framework=['all'], runners=checkov_runners)
         runner_registry = RunnerRegistry(
-            banner, runner_filter, *DEFAULT_RUNNERS
+            banner, runner_filter, *LAZY_DEFAULT_RUNNERS
         )
         runner_registry.filter_runners_for_files(['manifest.json'])
         self.assertIn("kubernetes", set(r.check_type for r in runner_registry.runners))
 
         runner_registry = RunnerRegistry(
-            banner, runner_filter, *DEFAULT_RUNNERS, sca_package_runner_2()
+            banner, runner_filter, *LAZY_DEFAULT_RUNNERS, sca_package_runner_2()
         )
         runner_registry.filter_runners_for_files(['file.py'])
         self.assertEqual(set(r.check_type for r in runner_registry.runners), {'cdk', 'sast', 'secrets'})
@@ -341,7 +341,7 @@ class TestRunnerRegistry(unittest.TestCase):
 
     def test_merge_reports(self):
         # given
-        runner_registry = RunnerRegistry(banner, RunnerFilter(), *DEFAULT_RUNNERS)
+        runner_registry = RunnerRegistry(banner, RunnerFilter(), *LAZY_DEFAULT_RUNNERS)
         reports = [
             [
                 Report(check_type=CheckType.TERRAFORM),
@@ -367,7 +367,7 @@ class TestRunnerRegistry(unittest.TestCase):
 
     def test_merge_reports_for_multi_frameworks_image_referencer_results(self):
         # given
-        runner_registry = RunnerRegistry(banner, RunnerFilter(), *DEFAULT_RUNNERS)
+        runner_registry = RunnerRegistry(banner, RunnerFilter(), *LAZY_DEFAULT_RUNNERS)
         tf_image_referencer_report = Report(check_type=CheckType.SCA_IMAGE)
         tf_image_referencer_report.image_cached_results = [
         {
@@ -467,7 +467,7 @@ class TestRunnerRegistry(unittest.TestCase):
         from checkov.common.bridgecrew.platform_integration import bc_integration
         bc_integration.customer_run_config_response = {'supportedIrFw': 'terraform'}
         # given
-        runner_registry = RunnerRegistry(banner, RunnerFilter(), *DEFAULT_RUNNERS)
+        runner_registry = RunnerRegistry(banner, RunnerFilter(), *LAZY_DEFAULT_RUNNERS)
         tf_report = Report(check_type=CheckType.TERRAFORM)
         tf_ir_report = Report(check_type=CheckType.SCA_IMAGE)
         tf_ir_report.image_cached_results = [

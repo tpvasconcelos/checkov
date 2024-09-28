@@ -75,9 +75,7 @@ def test_run():
     assert ckv.run_metadata["checkov_executable"] and isinstance(ckv.run_metadata["checkov_executable"], str)
     assert ckv.run_metadata["args"] and isinstance(ckv.run_metadata["args"], list)
 
-    # check all runners were initialized, but only 2 were actually run
-    assert len(ckv.runners) == 29
-
+    # check that only the 2 runners defined in the argv were run
     assert len(ckv.scan_reports) == 2
     assert {report.check_type for report in ckv.scan_reports} == {"kubernetes", "terraform"}
 

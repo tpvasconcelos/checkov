@@ -8,7 +8,7 @@ from checkov.bitbucket_pipelines.runner import Runner as bitbucket_pipelines_run
 from checkov.cdk.runner import CdkRunner
 from checkov.circleci_pipelines.runner import Runner as circleci_pipelines_runner
 from checkov.cloudformation.runner import Runner as cfn_runner
-from checkov.common.bridgecrew.check_type import CheckType, checkov_runners
+from checkov.common.bridgecrew.check_type import CheckType, checkov_runners, sast_types
 from checkov.dockerfile.runner import Runner as dockerfile_runner
 from checkov.github.runner import Runner as github_configuration_runner
 from checkov.github_actions.runner import Runner as github_actions_runner
@@ -31,6 +31,8 @@ from checkov.terraform_json.runner import TerraformJsonRunner
 from checkov.yaml_doc.runner import Runner as yaml_runner
 
 import pytest
+
+expected_runner_types = sorted(set(checkov_runners) - set(sast_types) - {CheckType.POLICY_3D})
 
 type_to_runner = {
     CheckType.ANSIBLE: ansible_runner,
@@ -67,13 +69,13 @@ type_to_runner = {
 type_to_lazy_runner = {lazy_runner.check_type: lazy_runner for lazy_runner in LAZY_DEFAULT_RUNNERS}
 
 def test_lazy_default_runners_complete():
-    assert type_to_lazy_runner.keys == checkov_runners
+    assert expected_runner_types == sorted(type_to_lazy_runner) == sorted(type_to_runner)
 
 def test_lazy_default_runners_no_duplicates():
     # Ensure that there is one and only one lazy runner for each check type
     assert len(LAZY_DEFAULT_RUNNERS) == len(type_to_lazy_runner)
 
-@pytest.mark.parametrize("check_type", checkov_runners)
+@pytest.mark.parametrize("check_type", expected_runner_types)
 def test_lazy_default_runners_load_class(check_type: CheckType):
     lazy_runner = type_to_lazy_runner[check_type]
     eager_runner = type_to_runner[check_type]
