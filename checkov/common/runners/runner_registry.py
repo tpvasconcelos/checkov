@@ -14,7 +14,7 @@ from collections import defaultdict
 from collections.abc import Iterable
 from io import StringIO
 from pathlib import Path
-from typing import List, Dict, Any, Optional, cast, TYPE_CHECKING, Type, Literal
+from typing import List, Dict, Any, Optional, cast, TYPE_CHECKING, Type, Literal, Union
 from checkov.common.bridgecrew.check_type import CheckType
 
 from checkov.common.bridgecrew.code_categories import CodeCategoryMapping, CodeCategoryType
@@ -79,7 +79,7 @@ SUMMARY_POSITIONS = frozenset(['top', 'bottom'])
 OUTPUT_DELIMITER = "\n--- OUTPUT DELIMITER ---\n"
 
 
-EagerOrLazyRunner = _BaseRunner | LazyRunner
+EagerOrLazyRunner = Union[_BaseRunner, LazyRunner]
 
 
 def filter_runner_framework(runners: list[EagerOrLazyRunner], runner_filter: RunnerFilter) -> list[EagerOrLazyRunner]:

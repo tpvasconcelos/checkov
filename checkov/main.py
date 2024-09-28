@@ -64,7 +64,7 @@ if TYPE_CHECKING:
 
 signal.signal(signal.SIGINT, lambda x, y: sys.exit(''))
 
-outer_registry = None
+outer_registry: RunnerRegistry | None = None
 
 logger = logging.getLogger(__name__)
 add_resource_code_filter_to_logger(logger)
@@ -288,7 +288,7 @@ class Checkov:
                 logger.debug('Using --list; setting source to DISABLED')
                 source = SourceTypes[BCSourceType.DISABLED]
 
-            if outer_registry:
+            if outer_registry is not None:
                 runner_registry = outer_registry
                 runner_registry.runner_filter = runner_filter
                 runner_registry.filter_runner_framework()

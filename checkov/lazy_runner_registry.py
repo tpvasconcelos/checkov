@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 from importlib import import_module
 
 from checkov.common.bridgecrew.check_type import CheckType
 
 if TYPE_CHECKING:
     from checkov.common.runners.base_runner import BaseRunner
+
 
 @dataclass
 class LazyRunner:
