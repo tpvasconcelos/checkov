@@ -11,7 +11,6 @@ from checkov.terraform.modules import TFDefinitionKey
 from checkov.terraform.graph_builder.graph_components.block_types import BlockType
 from checkov.terraform.graph_builder.graph_components.blocks import TerraformBlock
 from checkov.terraform.parser_functions import handle_dynamic_values
-from hcl2 import START_LINE, END_LINE
 
 if TYPE_CHECKING:
     from typing_extensions import TypeAlias
@@ -103,6 +102,8 @@ class Module:
         return
 
     def _add_provider(self, blocks: List[Dict[str, Dict[str, Any]]], path: TFDefinitionKeyType) -> None:
+        from hcl2 import START_LINE, END_LINE
+
         for provider_dict in blocks:
             for name in provider_dict:
                 attributes = provider_dict[name]
@@ -138,6 +139,8 @@ class Module:
                 self._add_to_blocks(variable_block)
 
     def _add_locals(self, blocks: List[Dict[str, Dict[str, Any]]], path: TFDefinitionKeyType) -> None:
+        from hcl2 import START_LINE, END_LINE
+
         for blocks_section in blocks:
             for name in blocks_section:
                 if name in (START_LINE, END_LINE):

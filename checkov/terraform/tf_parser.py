@@ -7,8 +7,6 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Optional, Dict, Mapping, Set, Tuple, Callable, Any, List, cast, TYPE_CHECKING, overload
 
-import hcl2
-
 from checkov.common.parallelizer.parallel_runner import parallel_runner
 from checkov.common.runners.base_runner import filter_ignored_paths, IGNORE_HIDDEN_DIRECTORY_ENV
 from checkov.common.util.consts import DEFAULT_EXTERNAL_MODULES_DIR, RESOLVED_MODULE_ENTRY_NAME
@@ -704,6 +702,8 @@ def load_or_die_quietly(
     Load JSON or HCL, depending on filename.
     :return: None if the file can't be loaded
     """
+    import hcl2
+
     file_path = os.fspath(file)
     file_name = os.path.basename(file_path)
 

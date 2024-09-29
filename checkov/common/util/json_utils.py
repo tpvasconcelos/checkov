@@ -3,7 +3,6 @@ import json
 from json import JSONDecodeError
 from typing import Any, Dict
 
-from lark import Tree
 from bc_jsonpath_ng import parse, JSONPath
 
 from checkov.common.bridgecrew.severities import Severity
@@ -19,7 +18,10 @@ type_of_function = type(lambda x: x)
 
 class CustomJSONEncoder(json.JSONEncoder):
     def default(self, o: Any) -> Any:
+        from lark import Tree
+
         from checkov.terraform.modules.module_objects import TFModule, TFDefinitionKey
+
         if isinstance(o, set):
             return list(o)
         elif isinstance(o, Tree):

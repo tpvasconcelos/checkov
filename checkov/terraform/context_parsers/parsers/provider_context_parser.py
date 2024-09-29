@@ -1,8 +1,6 @@
 import logging
 from typing import Dict, Any, List
 
-import hcl2
-from hcl2 import START_LINE, END_LINE
 
 from checkov.terraform.context_parsers.base_parser import BaseContextParser
 
@@ -25,9 +23,9 @@ class ProviderContextParser(BaseContextParser):
             entity_type, entity_config = next(iter(entity_block.items()))
             entity_name = entity_config.get("alias", ["default"])[0]
             self.context[entity_type][entity_name] = {
-                "start_line": entity_config[START_LINE],
-                "end_line": entity_config[END_LINE],
-                "code_lines": self.file_lines[entity_config[START_LINE] - 1: entity_config[END_LINE]],
+                "start_line": entity_config[self.hcl2.START_LINE],
+                "end_line": entity_config[self.hcl2.END_LINE],
+                "code_lines": self.file_lines[entity_config[self.hcl2.START_LINE] - 1: entity_config[self.hcl2.END_LINE]],
             }
 
         return self.context
@@ -44,7 +42,7 @@ class ProviderContextParser(BaseContextParser):
         end_line = self._compute_definition_end_line(line_num)
         provider_type = entity_context_path[0]
         try:
-            provider_obj = hcl2.loads(
+            provider_obj = self.hcl2.loads(
                 "\n".join(
                     map(lambda obj: obj[1], self.file_lines[line_num - 1 : end_line if end_line > line_num else line_num])
                 )

@@ -5,7 +5,6 @@ import logging
 import os
 from typing import TYPE_CHECKING
 
-import openai
 from termcolor import colored
 
 from checkov.common.bridgecrew.check_type import CheckType
@@ -33,7 +32,7 @@ class OpenAi:
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._should_run = True if api_key else False
-            openai.api_key = api_key
+            cls.api_key = api_key
 
         return cls._instance
 
@@ -68,6 +67,8 @@ class OpenAi:
         if not record.code_block:
             # no need to ask OpenAI about guidelines, if we have no code blocks
             return
+
+        import openai
 
         try:
             completion = await openai.ChatCompletion.acreate(  # type:ignore[no-untyped-call]
