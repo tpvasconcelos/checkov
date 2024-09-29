@@ -39,10 +39,8 @@ from checkov.common.goget.github.get_git import GitGetter
 from checkov.common.logger_streams import logger_streams
 from checkov.common.output.baseline import Baseline
 from checkov.common.resource_code_logger_filter import add_resource_code_filter_to_logger
-from checkov.common.runners.runner_registry import RunnerRegistry
 from checkov.common.sast.consts import SastLanguages
 from checkov.common.typing import LibraryGraph
-from checkov.common.util import prompt
 from checkov.common.util.banner import banner as checkov_banner, default_tool as default_tool
 from checkov.common.util.config_utils import get_default_config_paths
 from checkov.common.util.ext_argument_parser import ExtArgumentParser, flatten_csv
@@ -59,6 +57,7 @@ from checkov.sca_image.runner import Runner as sca_image_runner
 from checkov.version import version
 
 if TYPE_CHECKING:
+    from checkov.common.runners.runner_registry import RunnerRegistry
     from checkov.common.output.report import Report
     from configargparse import Namespace
 
@@ -194,6 +193,8 @@ class Checkov:
             tool = self.config.custom_tool_name
         try:
             if self.config.add_check:
+                from checkov.common.util import prompt
+
                 resp = prompt.Prompt()
                 check = prompt.Check(resp.responses)
                 check.action()
@@ -293,6 +294,8 @@ class Checkov:
                 runner_registry.runner_filter = runner_filter
                 runner_registry.filter_runner_framework()
             else:
+                from checkov.common.runners.runner_registry import RunnerRegistry
+
                 runner_registry = RunnerRegistry(banner, runner_filter, *LAZY_DEFAULT_RUNNERS, tool=tool)
 
             runnerDependencyHandler = RunnerDependencyHandler(runner_registry)

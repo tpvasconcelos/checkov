@@ -7,7 +7,6 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import Any, TYPE_CHECKING, Generic, TypeVar
 
-import aiohttp
 import docker
 
 from checkov.common.bridgecrew.vulnerability_scanning.image_scanner import image_scanner
@@ -185,6 +184,8 @@ class ImageReferencerMixin(Generic[_Definitions]):
         This is an async implementation of `_fetch_image_results`. The only change is we're getting a session
         as an input, and the asyncio behavior is managed in the calling method.
         """
+        import aiohttp
+
         async with aiohttp.ClientSession() as session:
             results: list[dict[str, Any]] = await asyncio.gather(*[
                 image_scanner.get_scan_results_from_cache_async(session, f"image:{i}")
@@ -319,6 +320,8 @@ class ImageReferencerMixin(Generic[_Definitions]):
     @staticmethod
     async def _fetch_licenses_per_image(image_names: list[str], image_results: list[dict[str, Any]]) \
             -> dict[str, list[_LicenseStatus]]:
+        import aiohttp
+
         merged_result: dict[str, list[_LicenseStatus]] = {}
         async with aiohttp.ClientSession() as session:
             license_results = await asyncio.gather(*[

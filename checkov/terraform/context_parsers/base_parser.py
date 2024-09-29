@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import List, Dict, Any, Tuple
 
 import dpath
+from functools import cached_property
 
 from checkov.common.bridgecrew.integration_features.features.policy_metadata_integration import integration as metadata_integration
 from checkov.common.comment.enum import COMMENT_REGEX
@@ -38,6 +39,14 @@ class BaseContextParser(ABC):
         self.context: dict[str, Any] = defaultdict(dict)
 
         parser_registry.register(self)
+
+    @cached_property
+    def hcl2(self):
+        # hcl2 is expensive to import, so we do it here
+        # to avoid importing when not needed
+        import hcl2
+
+        return hcl2
 
     @abstractmethod
     def get_entity_context_path(self, entity_block: Dict[str, Dict[str, Any]]) -> List[str]:
