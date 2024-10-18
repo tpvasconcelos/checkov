@@ -8,9 +8,9 @@ from _pytest.logging import LogCaptureFixture
 from typing_extensions import Literal
 
 from checkov import main
-from checkov.common.runners.base_runner import BaseRunner
-from checkov.common.runners.runner_registry import RunnerRegistry
-from checkov.main import DEFAULT_RUNNERS, Checkov
+from checkov.common.runners.runner_registry import RunnerRegistry, EagerOrLazyRunner
+from checkov.lazy_runner_registry import LAZY_DEFAULT_RUNNERS
+from checkov.main import Checkov
 from checkov.runner_filter import RunnerFilter
 
 if TYPE_CHECKING:
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
 
 class CustomRunnerRegistry(RunnerRegistry):
-    def __init__(self, banner: str, runner_filter: RunnerFilter, *runners: BaseRunner) -> None:
+    def __init__(self, banner: str, runner_filter: RunnerFilter, *runners: EagerOrLazyRunner) -> None:
         super().__init__(banner, runner_filter, *runners)
 
     def print_reports(
@@ -42,7 +42,7 @@ def test_run_with_outer_registry_and_framework_flag():
     argv = ["-d", str(resource_dir), "--framework", "terraform"]
 
     # when
-    main.outer_registry = CustomRunnerRegistry(custom_banner, RunnerFilter(), *DEFAULT_RUNNERS)
+    main.outer_registry = CustomRunnerRegistry(custom_banner, RunnerFilter(), *LAZY_DEFAULT_RUNNERS)
     ckv = Checkov()
     ckv.parse_config(argv=argv)
     ckv.run(banner=custom_banner)
@@ -75,9 +75,7 @@ def test_run():
     assert ckv.run_metadata["checkov_executable"] and isinstance(ckv.run_metadata["checkov_executable"], str)
     assert ckv.run_metadata["args"] and isinstance(ckv.run_metadata["args"], list)
 
-    # check all runners were initialized, but only 2 were actually run
-    assert len(ckv.runners) == 29
-
+    # check that only the 2 runners defined in the argv were run
     assert len(ckv.scan_reports) == 2
     assert {report.check_type for report in ckv.scan_reports} == {"kubernetes", "terraform"}
 

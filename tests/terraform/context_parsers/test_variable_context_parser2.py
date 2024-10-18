@@ -1,6 +1,6 @@
 import unittest
 
-from checkov.terraform import TFDefinitionKey
+from checkov.terraform.modules import TFDefinitionKey
 from checkov.terraform.tf_parser import TFParser
 from checkov.terraform.context_parsers.registry import parser_registry
 import os

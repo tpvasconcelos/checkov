@@ -17,7 +17,7 @@ from checkov.common.graph.db_connectors.networkx.networkx_db_connector import Ne
 from checkov.common.graph.db_connectors.rustworkx.rustworkx_db_connector import RustworkxConnector
 from checkov.common.models.enums import CheckCategories, CheckResult
 from checkov.runner_filter import RunnerFilter
-from checkov.terraform import TFDefinitionKey
+from checkov.terraform.modules import TFDefinitionKey
 from checkov.terraform.checks.resource.base_resource_check import BaseResourceCheck
 from checkov.terraform.plan_runner import Runner, resource_registry
 

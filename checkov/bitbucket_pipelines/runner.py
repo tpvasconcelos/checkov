@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, TYPE_CHECKING
 
-from checkov.bitbucket_pipelines.registry import registry
+from checkov.bitbucket_pipelines.checks.registry import registry
 from checkov.common.bridgecrew.check_type import CheckType
 from checkov.yaml_doc.runner import Runner as YamlRunner
 

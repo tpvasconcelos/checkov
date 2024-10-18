@@ -2,7 +2,7 @@ import os
 
 from lark import Tree
 
-from checkov.terraform import TFDefinitionKey
+from checkov.terraform.modules import TFDefinitionKey
 from checkov.terraform.modules.module_utils import clean_parser_types
 from checkov.terraform.tf_parser import TFParser
 from unittest import TestCase

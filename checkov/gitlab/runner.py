@@ -5,6 +5,7 @@ from checkov.common.bridgecrew.check_type import CheckType
 from checkov.gitlab.dal import Gitlab
 from checkov.json_doc.runner import Runner as JsonRunner
 from checkov.runner_filter import RunnerFilter
+from checkov.gitlab.checks.registry import registry
 
 if TYPE_CHECKING:
     from checkov.common.checks.base_check_registry import BaseCheckRegistry
@@ -50,5 +51,4 @@ class Runner(JsonRunner):
         return False
 
     def import_registry(self) -> BaseCheckRegistry:
-        from checkov.gitlab.registry import registry
         return registry

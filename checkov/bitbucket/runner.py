@@ -6,6 +6,7 @@ from checkov.bitbucket.dal import Bitbucket
 from checkov.common.bridgecrew.check_type import CheckType
 from checkov.json_doc.runner import Runner as JsonRunner
 from checkov.runner_filter import RunnerFilter
+from checkov.bitbucket.checks.registry import registry
 
 if TYPE_CHECKING:
     from checkov.common.checks.base_check_registry import BaseCheckRegistry
@@ -51,5 +52,4 @@ class Runner(JsonRunner):
         return False
 
     def import_registry(self) -> BaseCheckRegistry:
-        from checkov.bitbucket.registry import registry
         return registry

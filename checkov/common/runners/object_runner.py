@@ -34,6 +34,36 @@ _ObjectContext: TypeAlias = "dict[str, dict[str, Any]]"
 _ObjectDefinitions: TypeAlias = "dict[str, dict[str, Any] | list[dict[str, Any]]]"
 
 
+def import_all_modules() -> list[str]:
+    """Import all modules from the calling module's directory
+
+    This function is designed to be called from a package/__init__.py file
+    and import all package/*.py modules when the package is imported.
+    """
+    from pathlib import Path
+    from importlib import import_module
+    import sys
+
+    # Get the calling module's directory
+    calling_module = sys._getframe(1).f_globals["__name__"]
+    calling_module_path = sys.modules[calling_module].__file__
+    calling_module_dir = Path(calling_module_path).parent
+
+    # Find all .py files in the directory
+    modules = []
+    for file in calling_module_dir.glob("*.py"):
+        # Skip __init__.py
+        if file.stem == "__init__":
+            continue
+
+        # Import the module
+        module_name = f"{calling_module}.{file.stem}"
+        import_module(module_name)
+        modules.append(file.stem)
+
+    return modules
+
+
 class GhaMetadata(TypedDict):
     triggers: set[str]
     workflow_name: str

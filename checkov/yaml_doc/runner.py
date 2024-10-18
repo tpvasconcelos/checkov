@@ -6,6 +6,7 @@ from checkov.common.bridgecrew.check_type import CheckType
 from checkov.common.parsers.yaml.parser import parse
 from checkov.common.runners.object_runner import Runner as ObjectRunner
 from checkov.common.util.consts import START_LINE, END_LINE
+from checkov.yaml_doc.registry import registry
 
 if TYPE_CHECKING:
     from checkov.common.checks.base_check_registry import BaseCheckRegistry
@@ -33,8 +34,6 @@ class Runner(ObjectRunner):
         self.file_extensions = ['.yaml', '.yml']
 
     def import_registry(self) -> BaseCheckRegistry:
-        from checkov.yaml_doc.registry import registry
-
         return registry
 
     @staticmethod
