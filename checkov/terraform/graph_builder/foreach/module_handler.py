@@ -8,7 +8,7 @@ import json
 
 from checkov.common.util.consts import RESOLVED_MODULE_ENTRY_NAME
 from checkov.common.util.data_structures_utils import pickle_deepcopy
-from checkov.terraform import TFModule, TFDefinitionKey
+from checkov.terraform.modules import TFModule, TFDefinitionKey
 from checkov.terraform.graph_builder.foreach.abstract_handler import ForeachAbstractHandler
 from checkov.terraform.graph_builder.foreach.consts import FOREACH_STRING, COUNT_STRING
 from checkov.terraform.graph_builder.graph_components.block_types import BlockType

@@ -7,7 +7,7 @@ from checkov.common.bridgecrew.check_type import CheckType
 from checkov.common.bridgecrew.severities import Severities, BcSeverities
 from checkov.gitlab.runner import Runner
 from checkov.runner_filter import RunnerFilter
-from checkov.gitlab.registry import registry
+from checkov.gitlab.checks.registry import registry
 
 
 class TestGitlabRunnerValid(unittest.TestCase):

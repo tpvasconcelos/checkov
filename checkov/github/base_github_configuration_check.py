@@ -6,7 +6,7 @@ from typing import Any
 from checkov.common.checks.base_check import BaseCheck
 from checkov.common.models.enums import CheckCategories
 from checkov.github.dal import CKV_METADATA
-from checkov.github.registry import registry
+from checkov.github.checks.registry import registry
 
 
 HTTP = "http://"

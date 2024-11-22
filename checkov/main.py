@@ -19,16 +19,6 @@ import configargparse
 from urllib3.exceptions import MaxRetryError
 
 import checkov.logging_init  # noqa  # should be imported before the others to ensure correct logging setup
-from checkov.ansible.runner import Runner as ansible_runner
-from checkov.argo_workflows.runner import Runner as argo_workflows_runner
-from checkov.arm.runner import Runner as arm_runner
-from checkov.azure_pipelines.runner import Runner as azure_pipelines_runner
-from checkov.bicep.runner import Runner as bicep_runner
-from checkov.bitbucket.runner import Runner as bitbucket_configuration_runner
-from checkov.bitbucket_pipelines.runner import Runner as bitbucket_pipelines_runner
-from checkov.cdk.runner import CdkRunner
-from checkov.circleci_pipelines.runner import Runner as circleci_pipelines_runner
-from checkov.cloudformation.runner import Runner as cfn_runner
 from checkov.common.bridgecrew.bc_source import SourceTypes, BCSourceType, get_source_type, SourceType
 from checkov.common.bridgecrew.check_type import checkov_runners, CheckType
 from checkov.common.bridgecrew.platform_errors import ModuleNotEnabledError, PlatformConnectionError
@@ -59,83 +49,31 @@ from checkov.common.util.ext_argument_parser import ExtArgumentParser, flatten_c
 from checkov.common.util.runner_dependency_handler import RunnerDependencyHandler
 from checkov.common.util.type_forcers import convert_str_to_bool
 from checkov.contributor_metrics import report_contributor_metrics
-from checkov.dockerfile.runner import Runner as dockerfile_runner
 from checkov.docs_generator import print_checks
-from checkov.github.runner import Runner as github_configuration_runner
-from checkov.github_actions.runner import Runner as github_actions_runner
-from checkov.gitlab.runner import Runner as gitlab_configuration_runner
-from checkov.gitlab_ci.runner import Runner as gitlab_ci_runner
-from checkov.helm.runner import Runner as helm_runner
-from checkov.json_doc.runner import Runner as json_runner
-from checkov.kubernetes.runner import Runner as k8_runner
-from checkov.kustomize.runner import Runner as kustomize_runner
+from checkov.lazy_runner_registry import LAZY_DEFAULT_RUNNERS
 from checkov.logging_init import log_stream as logs_stream
-from checkov.openapi.runner import Runner as openapi_runner
 from checkov.runner_filter import RunnerFilter
 from checkov.common.sast.report_types import serialize_reachability_report
 from checkov.sast.report import SastData, SastReport
-from checkov.sast.runner import Runner as sast_runner
 from checkov.sca_image.runner import Runner as sca_image_runner
-from checkov.sca_package_2.runner import Runner as sca_package_runner_2
-from checkov.secrets.runner import Runner as secrets_runner
-from checkov.serverless.runner import Runner as sls_runner
-from checkov.terraform.plan_runner import Runner as tf_plan_runner
-from checkov.terraform.runner import Runner as tf_graph_runner
-from checkov.terraform_json.runner import TerraformJsonRunner
 from checkov.version import version
-from checkov.yaml_doc.runner import Runner as yaml_runner
 
 if TYPE_CHECKING:
     from checkov.common.output.report import Report
-    from checkov.common.runners.base_runner import BaseRunner
     from configargparse import Namespace
 
 signal.signal(signal.SIGINT, lambda x, y: sys.exit(''))
 
-outer_registry = None
+outer_registry: RunnerRegistry | None = None
 
 logger = logging.getLogger(__name__)
 add_resource_code_filter_to_logger(logger)
-
-# sca package runner added during the run method
-DEFAULT_RUNNERS: "list[BaseRunner[Any, Any, Any]]" = [
-    tf_graph_runner(),
-    cfn_runner(),
-    k8_runner(),
-    sls_runner(),
-    arm_runner(),
-    tf_plan_runner(),
-    helm_runner(),
-    dockerfile_runner(),
-    secrets_runner(),
-    json_runner(),
-    yaml_runner(),
-    github_configuration_runner(),
-    gitlab_configuration_runner(),
-    gitlab_ci_runner(),
-    bitbucket_configuration_runner(),
-    bitbucket_pipelines_runner(),
-    kustomize_runner(),
-    github_actions_runner(),
-    bicep_runner(),
-    openapi_runner(),
-    sca_image_runner(),
-    sca_package_runner_2(),
-    argo_workflows_runner(),
-    circleci_pipelines_runner(),
-    azure_pipelines_runner(),
-    ansible_runner(),
-    TerraformJsonRunner(),
-    sast_runner(),
-    CdkRunner(),
-]
 
 
 class Checkov:
     def __init__(self, argv: list[str] = sys.argv[1:]) -> None:
         self.config: "Namespace"  # set in 'parse_config()'
         self.parser: "ExtArgumentParser"  # set in 'parse_config()'
-        self.runners = DEFAULT_RUNNERS.copy()
         self.scan_reports: "list[Report]" = []
         self.run_metadata: dict[str, str | list[str]] = {}
         self.graphs: dict[str, list[tuple[LibraryGraph, Optional[str]]]] = {}
@@ -350,12 +288,12 @@ class Checkov:
                 logger.debug('Using --list; setting source to DISABLED')
                 source = SourceTypes[BCSourceType.DISABLED]
 
-            if outer_registry:
+            if outer_registry is not None:
                 runner_registry = outer_registry
                 runner_registry.runner_filter = runner_filter
                 runner_registry.filter_runner_framework()
             else:
-                runner_registry = RunnerRegistry(banner, runner_filter, *self.runners, tool=tool)
+                runner_registry = RunnerRegistry(banner, runner_filter, *LAZY_DEFAULT_RUNNERS, tool=tool)
 
             runnerDependencyHandler = RunnerDependencyHandler(runner_registry)
             runnerDependencyHandler.validate_runner_deps()

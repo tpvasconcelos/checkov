@@ -5,7 +5,7 @@ from unittest import mock
 import pytest
 
 from checkov.common.util.json_utils import object_hook, CustomJSONEncoder
-from checkov.terraform import TFModule
+from checkov.terraform.modules import TFModule
 from checkov.terraform.graph_builder.foreach.abstract_handler import ForeachAbstractHandler
 from checkov.terraform.graph_builder.foreach.builder import ForeachBuilder
 from checkov.terraform.graph_builder.foreach.module_handler import ForeachModuleHandler
