@@ -1,22 +1,20 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import Any, cast
 from importlib import import_module
 
 from checkov.common.bridgecrew.check_type import CheckType
-
-if TYPE_CHECKING:
-    from checkov.common.runners.base_runner import BaseRunner
+from checkov.common.runners.base_runner import BaseRunner
 
 
 @dataclass(frozen=True)
 class LazyRunner:
-    check_type: CheckType
+    check_type: str
     module: str | None = None
     cls: str = "Runner"
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.module == self._inferred_module_qualname:
             raise ValueError(f"Redundant module name provided for {self!r}.")
 
@@ -28,11 +26,11 @@ class LazyRunner:
     def _module_qualname(self) -> str:
         return self.module or self._inferred_module_qualname
 
-    def load_runner_class(self) -> type[BaseRunner]:
+    def load_runner_class(self) -> type[BaseRunner[Any, Any, Any]]:
         module = import_module(self._module_qualname)
-        return getattr(module, self.cls)
+        return cast(type[BaseRunner[Any, Any, Any]], getattr(module, self.cls))
 
-    def load_runner(self) -> BaseRunner:
+    def load_runner(self) -> BaseRunner[Any, Any, Any]:
         return self.load_runner_class()()
 
 
