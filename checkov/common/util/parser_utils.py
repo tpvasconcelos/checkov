@@ -6,7 +6,6 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, List
 
-import hcl2
 
 _FUNCTION_NAME_CHARS = frozenset("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
 
@@ -314,6 +313,8 @@ def _str_parser_loop_collection_helper(c: str, inside_collection_stack: List[str
 
 
 def eval_string(value: str) -> Any:
+    import hcl2
+
     try:
         value_string = value.replace("'", '"')
         parsed = hcl2.loads(f"eval = {value_string}\n")  # NOTE: newline is needed

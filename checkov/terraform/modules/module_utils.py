@@ -6,7 +6,6 @@ import os
 from collections.abc import Sequence
 from typing import Any, TYPE_CHECKING, TypeVar, cast, Tuple
 
-from lark import Tree
 import re
 
 from checkov.common.typing import TFDefinitionKeyType
@@ -172,6 +171,8 @@ def get_next_vertices(evaluated_files: list[str], unevaluated_files: list[str]) 
 
 
 def clean_parser_types(conf: _Conf) -> _Conf:
+    from lark import Tree
+
     if not conf:
         return conf
 

@@ -1,7 +1,6 @@
 from typing import Dict, Any, List
 
 import dpath
-from hcl2 import START_LINE, END_LINE
 
 from checkov.terraform.context_parsers.base_parser import BaseContextParser
 
@@ -29,9 +28,9 @@ class VariableContextParser(BaseContextParser):
         for entity_block in definition_blocks:
             entity_name, entity_config = next(iter(entity_block.items()))
             self.context[entity_name] = {
-                "start_line": entity_config[START_LINE],
-                "end_line": entity_config[END_LINE],
-                "code_lines": self.file_lines[entity_config[START_LINE] - 1: entity_config[END_LINE]],
+                "start_line": entity_config[self.hcl2.START_LINE],
+                "end_line": entity_config[self.hcl2.END_LINE],
+                "code_lines": self.file_lines[entity_config[self.hcl2.START_LINE] - 1: entity_config[self.hcl2.END_LINE]],
             }
 
             if isinstance(entity_block, dict):

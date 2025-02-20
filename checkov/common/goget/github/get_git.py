@@ -9,11 +9,6 @@ from checkov.common.goget.base_getter import BaseGetter
 from checkov.common.resource_code_logger_filter import add_resource_code_filter_to_logger
 from checkov.common.util.contextmanagers import temp_environ
 
-try:
-    from git import Repo
-    git_import_error = None
-except ImportError as e:
-    git_import_error = e
 
 COMMIT_ID_PATTERN = re.compile(r"\?(ref=)(?P<commit_id>([0-9a-f]{40}))")
 TAG_PATTERN = re.compile(r'\?(ref=)(?P<tag>(.*))')  # technically should be with ?ref=tags/ but this catches both
@@ -22,6 +17,14 @@ BRANCH_PATTERN = re.compile(r'\?(ref=heads/)(?P<branch>(.*))')
 
 class GitGetter(BaseGetter):
     def __init__(self, url: str, create_clone_and_result_dirs: bool = True) -> None:
+        try:
+            from git import Repo
+        except ImportError as e:
+            raise ImportError("Unable to load git module (is the git executable available?)") \
+                from e
+        else:
+            self._Repo = Repo
+
         self.logger = logging.getLogger(__name__)
         add_resource_code_filter_to_logger(self.logger)
         self.create_clone_and_res_dirs = create_clone_and_result_dirs
@@ -62,9 +65,6 @@ class GitGetter(BaseGetter):
         return url
 
     def do_get(self) -> str:
-        if git_import_error is not None:
-            raise ImportError("Unable to load git module (is the git executable available?)") \
-                from git_import_error
         git_url, internal_dir = self._source_subdir()
         clone_dir = self.temp_dir + "/clone/" if self.create_clone_and_res_dirs else self.temp_dir
         self._clone(git_url, clone_dir)
@@ -92,14 +92,14 @@ class GitGetter(BaseGetter):
 
     def _clone_helper(self, clone_dir: str, git_url: str) -> None:
         if self.branch:
-            Repo.clone_from(git_url, clone_dir, branch=self.branch, depth=1)  # depth=1 for shallow clone
+            self._Repo.clone_from(git_url, clone_dir, branch=self.branch, depth=1)  # depth=1 for shallow clone
         elif self.commit_id:  # no commit id support for branch
-            repo = Repo.clone_from(git_url, clone_dir, no_checkout=True)  # need to be a full git clone
+            repo = self._Repo.clone_from(git_url, clone_dir, no_checkout=True)  # need to be a full git clone
             repo.git.checkout(self.commit_id)
         elif self.tag:
-            Repo.clone_from(git_url, clone_dir, depth=1, b=self.tag)
+            self._Repo.clone_from(git_url, clone_dir, depth=1, b=self.tag)
         else:
-            Repo.clone_from(git_url, clone_dir, depth=1)
+            self._Repo.clone_from(git_url, clone_dir, depth=1)
 
     # Split source url into Git url and subdirectory path e.g. test.com/repo//repo/subpath becomes 'test.com/repo', '/repo/subpath')
     # Also see reference implementation @ go-getter https://github.com/hashicorp/go-getter/blob/main/source.go

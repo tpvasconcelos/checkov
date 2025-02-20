@@ -9,8 +9,6 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Optional, Dict, Mapping, Set, Tuple, Callable, Any, List, cast, TYPE_CHECKING, overload, TextIO, Type
 
-import hcl2
-
 from checkov.common.parallelizer.parallel_runner import parallel_runner
 from checkov.common.runners.base_runner import filter_ignored_paths, IGNORE_HIDDEN_DIRECTORY_ENV
 from checkov.common.util.consts import DEFAULT_EXTERNAL_MODULES_DIR, RESOLVED_MODULE_ENTRY_NAME
@@ -715,6 +713,7 @@ def load_or_die_quietly(
     Load JSON or HCL, depending on filename.
     :return: None if the file can't be loaded
     """
+
     file_path = os.fspath(file)
     file_name = os.path.basename(file_path)
 
@@ -742,6 +741,8 @@ def load_or_die_quietly(
 
 # if we are not running in a thread, run the hcl2.load function with a timeout, to prevent from getting stuck in parsing.
 def __parse_with_timeout(f: TextIO) -> dict[str, list[dict[str, Any]]]:
+    import hcl2
+
     # setting up timeout class
     timeout_class: Optional[Type[BaseTimeout]] = None
     if platform.system() == 'Windows':

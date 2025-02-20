@@ -8,11 +8,6 @@ from typing import TYPE_CHECKING
 from uuid import uuid4
 
 from license_expression import get_spdx_licensing
-from spdx_tools.spdx.model.actor import Actor, ActorType
-from spdx_tools.spdx.model.document import Document, CreationInfo
-from spdx_tools.spdx.model.package import Package
-from spdx_tools.spdx.model.spdx_none import SpdxNone
-from spdx_tools.spdx.writer.tagvalue.tagvalue_writer import write_document
 
 from checkov.common.output.extra_resource import ExtraResource
 from checkov.common.output.record import SCA_PACKAGE_SCAN_CHECK_NAME, Record
@@ -23,6 +18,9 @@ from checkov.version import version
 if TYPE_CHECKING:
     from boolean import Expression as LicenseExpression
     from spdx_tools.spdx.model import SpdxNoAssertion
+    from spdx_tools.spdx.model.document import Document
+    from spdx_tools.spdx.model.package import Package
+    from spdx_tools.spdx.model.spdx_none import SpdxNone
 
 
 DOCUMENT_NAME = "checkov-sbom"
@@ -41,6 +39,9 @@ class SPDX:
         self._added_packages_cache: set[str] = set()
 
     def create_document(self) -> Document:
+        from spdx_tools.spdx.model.actor import Actor, ActorType
+        from spdx_tools.spdx.model.document import Document, CreationInfo
+
         creation_info = CreationInfo(
             spdx_version="SPDX-2.3",
             spdx_id="SPDXRef-DOCUMENT",
@@ -56,6 +57,8 @@ class SPDX:
         return Document(creation_info=creation_info)
 
     def get_tag_value_output(self) -> str:
+        from spdx_tools.spdx.writer.tagvalue.tagvalue_writer import write_document
+
         output = StringIO()
 
         self.add_packages_to_doc()
@@ -79,6 +82,9 @@ class SPDX:
             package.license_info_from_files = licenses
 
     def create_package(self, check: Record | ExtraResource) -> Package:
+        from spdx_tools.spdx.model.package import Package
+        from spdx_tools.spdx.model.spdx_none import SpdxNone
+
         package_data = check.vulnerability_details
         if not package_data:
             # this shouldn't happen
