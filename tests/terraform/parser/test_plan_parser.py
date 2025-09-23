@@ -6,8 +6,9 @@ from unittest import mock
 from pytest_mock import MockerFixture
 
 from checkov.common.util.consts import TRUE_AFTER_UNKNOWN
-from checkov.terraform.plan_parser import parse_tf_plan
+from checkov.terraform.plan_parser import parse_tf_plan, _sanitize_count_from_name, _handle_complex_after_unknown
 from checkov.common.parsers.node import StrNode
+
 
 class TestPlanFileParser(unittest.TestCase):
 
@@ -20,7 +21,7 @@ class TestPlanFileParser(unittest.TestCase):
         resource_attributes = next(iter(resource_definition.values()))
         resource_tags = resource_attributes['tags'][0]
         for tag_key, tag_value in resource_tags.items():
-            if tag_key not in ['__startline__', '__endline__', 'start_line', 'end_line']:
+            if tag_key not in ['__startline__', '__endline__', '__file__', 'start_line', 'end_line']:
                 self.assertIsInstance(tag_value, StrNode)
 
     def test_provider_is_included(self):
@@ -30,6 +31,25 @@ class TestPlanFileParser(unittest.TestCase):
         file_provider_definition = tf_definition['provider']
         self.assertTrue(file_provider_definition)  # assert a provider exists
         assert file_provider_definition[0].get('aws', {}).get('region', None) == ['us-west-2']
+
+    def test_plan_multiple_providers(self):
+        current_dir = os.path.dirname(os.path.realpath(__file__))
+        valid_plan_path = current_dir + "/resources/plan_multiple_providers/tfplan.json"
+        tf_definition, _ = parse_tf_plan(valid_plan_path, {})
+        providers = tf_definition['provider']
+        self.assertEqual(len(providers), 3)
+        provider_names = []
+        provider_aliases = []
+        provider_addresses = []
+        for provider in providers:
+            key = next(iter(provider))
+            provider_names.append(key)
+            provider_aliases.append(provider[key]['alias'][0])
+            provider_addresses.append(provider[key]['__address__'])
+
+        self.assertEqual(provider_names, ["aws", "aws", "aws"])
+        self.assertEqual(provider_aliases, ["default", "ohio", "oregon"])
+        self.assertEqual(provider_addresses, ["aws.default", "aws.ohio", "aws.oregon"])
 
     def test_more_tags_values_are_flattened(self):
         current_dir = os.path.dirname(os.path.realpath(__file__))
@@ -63,7 +83,7 @@ class TestPlanFileParser(unittest.TestCase):
 
     def test_provisioners(self):
         current_dir = os.path.dirname(os.path.realpath(__file__))
-        plan_files = ['tfplan.json','tfplan2.json']
+        plan_files = ['tfplan.json', 'tfplan2.json']
 
         for file in plan_files:
             valid_plan_path = current_dir + "/resources/plan_provisioners/" + file
@@ -92,6 +112,41 @@ class TestPlanFileParser(unittest.TestCase):
         resource_attributes = next(iter(resource_definition.values()))
         self.assertEqual(resource_attributes['logging_config'][0]["bucket"], [TRUE_AFTER_UNKNOWN])
 
+    def test___sanitize_count_from_name_with_count(self):
+        name = "aws_s3_bucket.bucket[0]"
+        result = _sanitize_count_from_name(name)
+        self.assertEqual(result, "aws_s3_bucket.bucket")
+
+        name = "aws_s3_bucket.bucket"
+        result = _sanitize_count_from_name(name)
+        self.assertEqual(result, "aws_s3_bucket.bucket")
+
+    def test_handle_complex_after_unknown(self):
+        resource = {
+            "tags": [
+                [
+                    {
+                        "custom_tags": [
+                            {"key": "Tag1", "value": "Value1"},
+                            {"key": "Tag2", "value": "Value2"}
+                        ]
+                    }
+                ]
+            ]
+        }
+        key: str = 'tags'
+        value: list = [
+            {
+                'custom_tags': [
+                    {"key": "Tag1", "value": "Value1"},
+                    {"key": "Tag2", "value": "Value2"}
+                ]
+            }
+        ]
+        _handle_complex_after_unknown(key, resource, value)
+        assert resource == {'tags': [[{'custom_tags': ['true_after_unknown']}]]}
+
+
 def test_large_file(mocker: MockerFixture):
     # given
     test_file = Path(__file__).parent / "resources/plan_encodings/tfplan_mac_utf8.json"
@@ -103,6 +158,17 @@ def test_large_file(mocker: MockerFixture):
 
     assert tf_definition['resource'][0]['aws_s3_bucket']['b']['start_line'][0] == 0
     assert tf_definition['resource'][0]['aws_s3_bucket']['b']['end_line'][0] == 0
+
+    def test_vpc_endpoint_policy_is_parsed(self):
+        current_dir = os.path.dirname(os.path.realpath(__file__))
+        valid_plan_path = current_dir + "/resources/plan_vpc_endpoint/tfplan.json"
+        tf_definition, _ = parse_tf_plan(valid_plan_path, {})
+        file_resource_definition = tf_definition['resource'][0]
+        resource_definition = next(iter(file_resource_definition.values()))
+        resource_attributes = next(iter(resource_definition.values()))
+        self.assertIn('policy', resource_attributes)
+        policy = resource_attributes['policy'][0]
+        self.assertIn('Statement', policy)
 
 
 if __name__ == '__main__':
