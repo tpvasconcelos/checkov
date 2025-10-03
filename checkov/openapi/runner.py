@@ -11,6 +11,7 @@ from checkov.common.util.file_utils import read_file_with_any_encoding
 from checkov.yaml_doc.runner import Runner as YamlRunner
 from checkov.json_doc.runner import Runner as JsonRunner
 from pathlib import Path
+from checkov.openapi.checks.registry import registry
 
 if TYPE_CHECKING:
     from typing_extensions import TypeAlias
@@ -29,9 +30,7 @@ class Runner(YamlRunner, JsonRunner):
         self.file_extensions = [".json", ".yml", ".yaml"]
 
     def import_registry(self) -> BaseCheckRegistry:
-        from checkov.openapi.checks.registry import openapi_registry
-
-        return openapi_registry
+        return registry
 
     @staticmethod
     def _parse_file(

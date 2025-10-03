@@ -9,7 +9,7 @@ from checkov.common.graph.graph_builder.utils import calculate_hash
 from checkov.common.graph.graph_builder.graph_components.attribute_names import CustomAttributes
 from checkov.common.util.parser_utils import TERRAFORM_NESTED_MODULE_PATH_PREFIX, TERRAFORM_NESTED_MODULE_PATH_ENDING, \
     TERRAFORM_NESTED_MODULE_INDEX_SEPARATOR
-from checkov.terraform import TFModule
+from checkov.terraform.modules import TFModule
 from checkov.terraform.graph_builder.graph_components.block_types import BlockType
 from checkov.terraform.graph_builder.graph_components.blocks import TerraformBlock
 from checkov.terraform.graph_builder.graph_components.generic_resource_encryption import ENCRYPTION_BY_RESOURCE_TYPE

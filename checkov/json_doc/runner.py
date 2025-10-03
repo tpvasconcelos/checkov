@@ -6,6 +6,7 @@ from checkov.common.bridgecrew.check_type import CheckType
 from checkov.common.parsers.json import parse
 from checkov.common.parsers.node import DictNode, ListNode
 from checkov.common.runners.object_runner import Runner as ObjectRunner
+from checkov.json_doc.registry import registry
 
 if TYPE_CHECKING:
     from checkov.common.checks.base_check_registry import BaseCheckRegistry
@@ -33,7 +34,6 @@ class Runner(ObjectRunner):
         self.file_extensions = ['.json']
 
     def import_registry(self) -> BaseCheckRegistry:
-        from checkov.json_doc.registry import registry
         return registry
 
     @staticmethod

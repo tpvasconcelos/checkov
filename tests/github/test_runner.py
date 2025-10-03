@@ -7,7 +7,7 @@ from checkov.common.bridgecrew.check_type import CheckType
 from checkov.common.bridgecrew.severities import Severities, BcSeverities
 from checkov.github.runner import Runner
 from checkov.runner_filter import RunnerFilter
-from checkov.github.registry import registry
+from checkov.github.checks.registry import registry
 
 
 class TestRunnerValid(unittest.TestCase):

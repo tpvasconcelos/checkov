@@ -7,7 +7,7 @@ import pytest
 from checkov.common.graph.graph_builder import CustomAttributes
 from checkov.common.util.env_vars_config import env_vars_config
 from checkov.common.util.json_utils import object_hook, CustomJSONEncoder
-from checkov.terraform import TFModule
+from checkov.terraform.modules import TFModule
 from checkov.terraform.graph_builder.foreach.abstract_handler import ForeachAbstractHandler
 from checkov.terraform.graph_builder.foreach.builder import ForeachBuilder
 from checkov.terraform.graph_builder.foreach.module_handler import ForeachModuleHandler

@@ -7,6 +7,7 @@ from checkov.common.bridgecrew.check_type import CheckType
 from checkov.github.dal import Github, CKV_METADATA
 from checkov.json_doc.runner import Runner as JsonRunner
 from checkov.runner_filter import RunnerFilter
+from checkov.github.checks.registry import registry
 
 if TYPE_CHECKING:
     from checkov.common.checks.base_check_registry import BaseCheckRegistry
@@ -52,7 +53,6 @@ class Runner(JsonRunner):
         return False
 
     def import_registry(self) -> BaseCheckRegistry:
-        from checkov.github.registry import registry
         return registry
 
     def _load_files(

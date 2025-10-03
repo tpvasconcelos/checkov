@@ -18,7 +18,7 @@ from checkov.common.output.record import Record
 from checkov.common.output.report import Report, merge_reports, remove_duplicate_results
 from checkov.common.util import data_structures_utils
 from checkov.common.util.consts import RESOLVED_MODULE_ENTRY_NAME
-from checkov.terraform import get_module_from_full_path, get_module_name, get_abs_path
+from checkov.terraform.modules import get_module_from_full_path, get_module_name, get_abs_path
 from checkov.common.util.secrets import omit_secret_value_from_checks
 from checkov.runner_filter import RunnerFilter
 from checkov.terraform.base_runner import BaseTerraformRunner

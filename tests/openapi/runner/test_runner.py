@@ -7,7 +7,7 @@ from checkov.common.bridgecrew.severities import Severities, BcSeverities
 from checkov.common.output.sarif import Sarif
 from checkov.openapi.runner import Runner
 from checkov.runner_filter import RunnerFilter
-from checkov.openapi.checks.registry import openapi_registry
+from checkov.openapi.checks.registry import registry
 
 class TestRunnerValid(unittest.TestCase):
 
@@ -43,7 +43,7 @@ class TestRunnerValid(unittest.TestCase):
         self.assertEqual(len(report.parsing_errors), 0)
 
     def test_registry_has_type(self):
-        self.assertEqual(openapi_registry.report_type, CheckType.OPENAPI)
+        self.assertEqual(registry.report_type, CheckType.OPENAPI)
 
     def test_runner_all_checks(self) -> None:
         current_dir = os.path.dirname(os.path.realpath(__file__))

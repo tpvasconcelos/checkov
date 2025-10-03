@@ -4,7 +4,7 @@ from abc import abstractmethod
 from collections.abc import Iterable
 from typing import TYPE_CHECKING, Any
 
-from checkov.bitbucket.registry import registry
+from checkov.bitbucket.checks.registry import registry
 from checkov.common.checks.base_check import BaseCheck
 
 if TYPE_CHECKING:

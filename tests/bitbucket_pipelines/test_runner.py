@@ -5,7 +5,7 @@ from checkov.bitbucket_pipelines.runner import Runner
 from checkov.common.bridgecrew.check_type import CheckType
 from checkov.common.bridgecrew.severities import Severities, BcSeverities
 from checkov.runner_filter import RunnerFilter
-from checkov.bitbucket_pipelines.registry import registry
+from checkov.bitbucket_pipelines.checks.registry import registry
 
 
 class TestRunnerValid(unittest.TestCase):
